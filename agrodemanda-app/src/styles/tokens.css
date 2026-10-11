@@ -1,0 +1,44 @@
+/* ===== DESIGN TOKENS — AgroDemanda ===== */
+:root {
+  /* --- Colors --- */
+  --color-primary:       #0B47A8;
+  --color-primary-dark:  #083a8a;
+  --color-primary-light: #DCE6F7;
+  --color-danger:        #D93025;
+  --color-field-bg:      #D9D9D9;
+  --color-field-border:  #D9D9D9;
+  --color-white:         #FFFFFF;
+  --color-text-main:     #1A1A1A;
+  --color-text-muted:    #6B6B6B;
+  --color-text-label:    #0B47A8;
+  --color-border-blue:   #0B47A8;
+  --color-card-bg:       #FFFFFF;
+  --color-overlay:       rgba(0,0,0,0.15);
+
+  /* --- Border Radii --- */
+  --radius-card:   16px;
+  --radius-field:   8px;
+  --radius-btn:     8px;
+  --radius-pill:   50px;
+  --radius-tile:   10px;
+
+  /* --- Spacing --- */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* --- Typography --- */
+  --font-family: 'Open Sans', 'Noto Sans', system-ui, sans-serif;
+  --font-size-xs:   11px;
+  --font-size-sm:   13px;
+  --font-size-md:   15px;
+  --font-size-lg:   18px;
+  --font-size-xl:   24px;
+  --font-weight-normal: 400;
+  --font-weight-bold:   700;
+
+  /* --- Transition --- */
+  --transition-fast: 150ms ease;
+}

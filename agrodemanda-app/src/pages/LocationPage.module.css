@@ -1,0 +1,94 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-white);
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 16px 40px 16px;
+}
+
+.panel {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-border-blue);
+  border-radius: var(--radius-card);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(11, 71, 168, 0.08);
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.titleWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pinIcon {
+  font-size: 20px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.backButton {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--color-primary);
+  padding: 4px 8px;
+  line-height: 1;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.backButton:hover {
+  background-color: var(--color-primary-light);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.submitContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.prontoButton {
+  width: 85% !important;
+  min-height: 46px;
+}
+
+@media (max-width: 480px) {
+  .panel {
+    max-width: 92%;
+    padding: 20px 16px;
+  }
+
+  .prontoButton {
+    width: 90% !important;
+  }
+}

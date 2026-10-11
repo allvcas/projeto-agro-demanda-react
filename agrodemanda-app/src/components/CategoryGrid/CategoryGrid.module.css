@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: var(--space-md);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  width: 100%;
+  padding: 4px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-card);
+  transition: border-color var(--transition-fast);
+}
+
+.gridError {
+  border-color: var(--color-danger);
+  background-color: #fff8f8;
+}
+
+.errorMessage {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  margin-top: var(--space-xs);
+  font-weight: 600;
+  text-align: left;
+}
+
+@media (max-width: 360px) {
+  .grid {
+    gap: 8px;
+  }
+}

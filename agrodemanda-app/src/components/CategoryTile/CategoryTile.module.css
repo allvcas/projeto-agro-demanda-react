@@ -1,0 +1,77 @@
+.tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background-color: var(--color-field-bg);
+  border-radius: var(--radius-tile);
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  outline: none;
+}
+
+.tile:hover {
+  background-color: #cecece;
+}
+
+.tile:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(11, 71, 168, 0.3);
+}
+
+.selected {
+  background-color: var(--color-primary-light) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 34px;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.iconSvg {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.ellipsis {
+  display: flex;
+  gap: 3px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+  line-height: 1.1;
+}
+
+.otherLabel {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.checkBadge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--color-primary);
+}
