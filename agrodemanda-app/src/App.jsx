@@ -3,8 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DemandDraftProvider } from './context/DemandDraftContext';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import DemandStep1Page from './pages/DemandStep1Page';
 import DemandStep2Page from './pages/DemandStep2Page';
@@ -37,12 +36,12 @@ export default function App() {
       <AuthProvider>
         <DemandDraftProvider>
           <Routes>
-            {/* Rotas Públicas */}
+            {/* Rotas de Autenticação */}
             <Route
               path="/login"
               element={
                 <PublicOnlyRoute>
-                  <LoginPage />
+                  <AuthPage defaultTab="login" />
                 </PublicOnlyRoute>
               }
             />
@@ -50,7 +49,7 @@ export default function App() {
               path="/cadastro"
               element={
                 <PublicOnlyRoute>
-                  <RegisterPage />
+                  <AuthPage defaultTab="register" />
                 </PublicOnlyRoute>
               }
             />
