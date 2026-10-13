@@ -5,115 +5,65 @@ import { getDemands, updateDemandStatus, deleteDemand } from '../services/demand
 import { categories } from '../data/categories';
 import styles from './AdminPage.module.css';
 
+/**
+ * Painel da Gestão Pública (Admin)
+ * Permite que a Secretaria acompanhe todos os pedidos, altere o status e filtre por comunidade.
+ */
 export default function AdminPage() {
   const navigate = useNavigate();
+
+  // Estados principais
   const [demands, setDemands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todas');
   const [categoryFilter, setCategoryFilter] = useState('todas');
-  const [statusUpdating, setStatusUpdating] = useState(null);
-
-  // Delete modal state
-  const [demandToDelete, setDemandToDelete] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
+  // 1. Carrega todas as demandas do sistema ao abrir a tela
   useEffect(() => {
     async function loadData() {
-      try {
-        const data = await getDemands();
-        setDemands(data);
-      } finally {
-        setLoading(false);
-      }
+      const data = await getDemands();
+      setDemands(data);
+      setLoading(false);
     }
     loadData();
   }, []);
 
-  const handleStatusChange = async (demandId, newStatus) => {
-    setStatusUpdating(demandId);
-    try {
-      const updated = await updateDemandStatus(demandId, newStatus);
-      setDemands(updated);
-    } finally {
-      setStatusUpdating(null);
-    }
+  // 2. Altera o status da demanda (Aberta, Em Atendimento, Concluída)
+  const handleStatusChange = async (id, newStatus) => {
+    const updated = await updateDemandStatus(id, newStatus);
+    setDemands(updated);
   };
 
-  const handleConfirmDelete = async () => {
-    if (!demandToDelete) return;
-    setIsDeleting(true);
-    try {
-      const updated = await deleteDemand(demandToDelete.id);
+  // 3. Exclui uma demanda após confirmação simples
+  const handleDelete = async (id) => {
+    if (window.confirm(`Tem certeza que deseja remover a solicitação ${id}?`)) {
+      const updated = await deleteDemand(id);
       setDemands(updated);
-      setDemandToDelete(null);
       setToastMessage('Solicitação removida com sucesso!');
       setTimeout(() => setToastMessage(''), 3000);
-    } finally {
-      setIsDeleting(false);
     }
   };
 
-  // Metrics
-  const totalCount = demands.length;
+  // 4. Métricas calculadas para os cards do topo
   const openCount = demands.filter((d) => d.status === 'aberta').length;
   const inProgressCount = demands.filter((d) => d.status === 'em_atendimento').length;
   const completedCount = demands.filter((d) => d.status === 'concluida').length;
 
-  // Filtered demands
+  // 5. Filtro dinâmico das demandas
   const filteredDemands = demands.filter((d) => {
-    // Status filter
-    if (statusFilter !== 'todas' && d.status !== statusFilter) {
-      return false;
-    }
-    // Category filter
-    if (categoryFilter !== 'todas' && d.category !== categoryFilter) {
-      return false;
-    }
-    // Search query
+    if (statusFilter !== 'todas' && d.status !== statusFilter) return false;
+    if (categoryFilter !== 'todas' && d.category !== categoryFilter) return false;
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
       const matchId = d.id?.toLowerCase().includes(q);
       const matchDesc = d.description?.toLowerCase().includes(q);
-      const matchNeighborhood = d.location?.neighborhood?.toLowerCase().includes(q);
-      const matchReference = d.location?.reference?.toLowerCase().includes(q);
-      return matchId || matchDesc || matchNeighborhood || matchReference;
+      const matchLoc = (d.location?.community || d.location?.neighborhood || '').toLowerCase().includes(q);
+      return matchId || matchDesc || matchLoc;
     }
     return true;
   });
-
-  const getCategoryLabel = (catId) => {
-    const found = categories.find((c) => c.id === catId);
-    return found ? found.label : catId;
-  };
-
-  const getCategoryIcon = (catId) => {
-    switch (catId) {
-      case 'saude': return '➕';
-      case 'agua': return '💧';
-      case 'estrada': return '🛣️';
-      case 'iluminacao': return '💡';
-      case 'agricultura': return '🌱';
-      default: return '📋';
-    }
-  };
-
-  const formatDate = (isoString) => {
-    if (!isoString) return '';
-    try {
-      const date = new Date(isoString);
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return isoString;
-    }
-  };
 
   return (
     <div className={styles.adminPage}>
@@ -121,33 +71,34 @@ export default function AdminPage() {
 
       <main className={styles.mainContainer}>
         {toastMessage && (
-          <div className={styles.toastAlert} role="status">
+          <div className={styles.toastAlert}>
             <span>✓</span> {toastMessage}
           </div>
         )}
 
+        {/* Topo do Painel */}
         <div className={styles.topBar}>
           <div className={styles.titleInfo}>
             <div className={styles.adminBadge}>PAINEL DA GESTÃO PÚBLICA</div>
-            <h1 className={styles.pageTitle}>Solicitações Abertas da Comunidade</h1>
+            <h1 className={styles.pageTitle}>Solicitações da Comunidade Rural</h1>
             <p className={styles.pageSubtitle}>
-              Triagem, despacho técnico e gerenciamento para Santa Cruz do Capibaribe e distritos rurais
+              Triagem, despacho técnico e acompanhamento de Santa Cruz do Capibaribe
             </p>
           </div>
           <button
             type="button"
             className={styles.newDemandBtn}
-            onClick={() => navigate('/demanda')}
+            onClick={() => navigate('/solicitacao')}
           >
             + Nova Solicitação
           </button>
         </div>
 
-        {/* Metrics Cards */}
+        {/* 4 Cards de Métricas */}
         <section className={styles.metricsGrid}>
           <div className={`${styles.metricCard} ${styles.metricTotal}`}>
-            <span className={styles.metricLabel}>Total de Solicitações</span>
-            <span className={styles.metricValue}>{totalCount}</span>
+            <span className={styles.metricLabel}>Total</span>
+            <span className={styles.metricValue}>{demands.length}</span>
           </div>
           <div className={`${styles.metricCard} ${styles.metricOpen}`}>
             <span className={styles.metricLabel}>Abertas / Pendentes</span>
@@ -163,10 +114,10 @@ export default function AdminPage() {
           </div>
         </section>
 
-        {/* Search & Filters */}
+        {/* Barra de Busca e Filtros */}
         <section className={styles.filterSection}>
           <div className={styles.searchBox}>
-            <span className={styles.searchIcon} aria-hidden="true">🔍</span>
+            <span className={styles.searchIcon}>🔍</span>
             <input
               type="text"
               placeholder="Buscar por protocolo, comunidade, descrição..."
@@ -174,16 +125,6 @@ export default function AdminPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
             />
-            {searchTerm && (
-              <button
-                type="button"
-                className={styles.clearSearchBtn}
-                onClick={() => setSearchTerm('')}
-                aria-label="Limpar busca"
-              >
-                ✕
-              </button>
-            )}
           </div>
 
           <div className={styles.filterRow}>
@@ -212,56 +153,41 @@ export default function AdminPage() {
               >
                 <option value="todas">Todas as Categorias</option>
                 {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.label}
-                  </option>
+                  <option key={c.id} value={c.id}>{c.label}</option>
                 ))}
               </select>
             </div>
           </div>
         </section>
 
-        {/* Demand Cards List */}
+        {/* Lista de Chamados */}
         {loading ? (
-          <div className={styles.loadingState}>
-            <div className={styles.spinner} />
-            <p>Carregando solicitações...</p>
-          </div>
+          <p>Carregando solicitações...</p>
         ) : filteredDemands.length === 0 ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>📂</span>
             <h3>Nenhuma solicitação encontrada</h3>
-            <p>Tente ajustar os filtros ou o termo de busca pesquisado.</p>
           </div>
         ) : (
           <div className={styles.demandsList}>
             {filteredDemands.map((demand) => {
-              const statusClass =
-                demand.status === 'aberta'
-                  ? styles.statusBadgeOpen
-                  : demand.status === 'em_atendimento'
-                  ? styles.statusBadgeProgress
-                  : styles.statusBadgeDone;
-
-              const statusLabel =
-                demand.status === 'aberta'
-                  ? 'Aberta'
-                  : demand.status === 'em_atendimento'
-                  ? 'Em Atendimento'
-                  : 'Concluída';
+              const categoryLabel = categories.find((c) => c.id === demand.category)?.label || demand.category;
 
               return (
                 <article key={demand.id} className={styles.demandCard}>
                   <div className={styles.cardHeader}>
                     <div className={styles.headerLeft}>
                       <span className={styles.protocolBadge}>{demand.id}</span>
-                      <span className={styles.categoryBadge}>
-                        <span aria-hidden="true">{getCategoryIcon(demand.category)}</span>{' '}
-                        {getCategoryLabel(demand.category)}
-                      </span>
+                      <span className={styles.categoryBadge}>{categoryLabel}</span>
                     </div>
-                    <span className={`${styles.statusBadge} ${statusClass}`}>
-                      {statusLabel}
+                    <span className={`${styles.statusBadge} ${
+                      demand.status === 'aberta'
+                        ? styles.statusBadgeOpen
+                        : demand.status === 'em_atendimento'
+                        ? styles.statusBadgeProgress
+                        : styles.statusBadgeDone
+                    }`}>
+                      {demand.status === 'aberta' ? 'Aberta' : demand.status === 'em_atendimento' ? 'Em Atendimento' : 'Concluída'}
                     </span>
                   </div>
 
@@ -272,38 +198,27 @@ export default function AdminPage() {
                     </div>
 
                     <div className={styles.locationBlock}>
-                      <div className={styles.locationTitle}>
-                        <span aria-hidden="true">📍</span> Localização do Campo
-                      </div>
+                      <div className={styles.locationTitle}>📍 Localização</div>
                       <div className={styles.locationDetails}>
-                        <p>
-                          <strong>Comunidade / Bairro:</strong> {demand.location?.neighborhood || 'Não informado'}
-                        </p>
-                        <p>
-                          <strong>Ponto de referência:</strong> {demand.location?.reference || 'Não informado'}
-                        </p>
-                        <p className={styles.subLocation}>
-                          {demand.location?.state && `Estado: ${demand.location.state}`}
-                          {demand.location?.cep && ` · CEP: ${demand.location.cep}`}
-                        </p>
+                        <p><strong>Comunidade:</strong> {demand.location?.community || demand.location?.neighborhood || 'Não informado'}</p>
+                        {demand.location?.reference && (
+                          <p><strong>Referência:</strong> {demand.location.reference}</p>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <div className={styles.cardFooter}>
                     <div className={styles.footerDate}>
-                      Registrado em: {formatDate(demand.createdAt)}
+                      Registrado em: {new Date(demand.createdAt).toLocaleDateString('pt-BR')}
                     </div>
 
                     <div className={styles.footerActions}>
                       <div className={styles.actionGroup}>
-                        <label htmlFor={`status-select-${demand.id}`}>
-                          Alterar status:
-                        </label>
+                        <label htmlFor={`status-${demand.id}`}>Status:</label>
                         <select
-                          id={`status-select-${demand.id}`}
+                          id={`status-${demand.id}`}
                           value={demand.status}
-                          disabled={statusUpdating === demand.id}
                           onChange={(e) => handleStatusChange(demand.id, e.target.value)}
                           className={styles.statusActionSelect}
                         >
@@ -313,13 +228,10 @@ export default function AdminPage() {
                         </select>
                       </div>
 
-                      {/* Remove / Delete Button */}
                       <button
                         type="button"
                         className={styles.deleteBtn}
-                        onClick={() => setDemandToDelete(demand)}
-                        title="Remover solicitação"
-                        aria-label={`Remover solicitação ${demand.id}`}
+                        onClick={() => handleDelete(demand.id)}
                       >
                         🗑️ Excluir
                       </button>
@@ -331,49 +243,6 @@ export default function AdminPage() {
           </div>
         )}
       </main>
-
-      {/* Confirmation Modal to Delete Demand */}
-      {demandToDelete && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => !isDeleting && setDemandToDelete(null)}
-        >
-          <div
-            className={styles.modalDialog}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-modal-title"
-          >
-            <div className={styles.modalIcon}>⚠️</div>
-            <h3 id="delete-modal-title" className={styles.modalTitle}>
-              Remover Solicitação
-            </h3>
-            <p className={styles.modalDesc}>
-              Tem certeza que deseja apagar a solicitação{' '}
-              <strong>{demandToDelete.id}</strong>? Essa ação é definitiva e removerá o registro do sistema.
-            </p>
-            <div className={styles.modalActions}>
-              <button
-                type="button"
-                className={styles.modalCancelBtn}
-                onClick={() => setDemandToDelete(null)}
-                disabled={isDeleting}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className={styles.modalDeleteBtn}
-                onClick={handleConfirmDelete}
-                disabled={isDeleting}
-              >
-                {isDeleting ? 'Removendo...' : 'Sim, Excluir'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

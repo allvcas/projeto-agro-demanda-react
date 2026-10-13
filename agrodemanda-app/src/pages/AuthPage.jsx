@@ -1,50 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { maskCpf, maskPhone } from '../utils/masks';
 import styles from './AuthPage.module.css';
 
 /**
  * Tela de Autenticação — Área do Agricultor
- * Reúne Login ("Entrar") e Cadastro ("Criar conta") em uma interface limpa, dividida por abas.
+ * Permite que o produtor faça Login ou Crie uma Conta em uma única página dividida por abas.
  */
 export default function AuthPage({ defaultTab = 'login' }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const { login, register } = useAuth();
 
-  // Define qual aba está ativa ('login' ou 'register')
-  const [activeTab, setActiveTab] = useState(
-    location.pathname === '/cadastro' || defaultTab === 'register' ? 'register' : 'login'
-  );
+  // 1. Controle da aba ativa ('login' ou 'register')
+  const [activeTab, setActiveTab] = useState(defaultTab);
 
-  // Sincroniza a aba se o usuário navegar entre /login e /cadastro
-  useEffect(() => {
-    if (location.pathname === '/cadastro') {
-      setActiveTab('register');
-    } else if (location.pathname === '/login') {
-      setActiveTab('login');
-    }
-  }, [location.pathname]);
-
-  // --- Estados do Formulário de Login ---
-  const [loginIdentifier, setLoginIdentifier] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-
-  // --- Estados do Formulário de Cadastro ---
-  const [regName, setRegName] = useState('');
-  const [regCpf, setRegCpf] = useState('');
-  const [regPhone, setRegPhone] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regCommunity, setRegCommunity] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-
-  // Mensagens de feedback
+  // 2. Mensagens de feedback e carregamento
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Lista de comunidades rurais
+  // 3. Dados do formulário de Login
+  const [loginData, setLoginData] = useState({
+    identifier: '',
+    password: '',
+  });
+
+  // 4. Dados do formulário de Cadastro
+  const [regData, setRegData] = useState({
+    name: '',
+    cpf: '',
+    phone: '',
+    email: '',
+    community: '',
+    password: '',
+  });
+
+  // Lista de comunidades rurais de Santa Cruz do Capibaribe
   const ruralCommunities = [
     'Magana',
     'Poço Fundo',
@@ -58,45 +50,31 @@ export default function AuthPage({ defaultTab = 'login' }) {
     'Outra comunidade rural...',
   ];
 
-  // Alterna entre abas e atualiza a URL sem recarregar a página
-  const handleTabChange = (tab) => {
+  // Alterna entre as abas e limpa avisos
+  const switchTab = (tab) => {
     setActiveTab(tab);
     setErrorMsg('');
     setSuccessMsg('');
-    if (tab === 'login') {
-      window.history.replaceState(null, '', '/login');
-    } else {
-      window.history.replaceState(null, '', '/cadastro');
-    }
   };
 
-  // --- Ação de Login ---
-  const handleLoginSubmit = async (e) => {
+  // Envio do formulário de Login
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
-
-    if (!loginIdentifier.trim()) {
-      setErrorMsg('Informe seu e-mail ou CPF.');
-      return;
-    }
-    if (!loginPassword) {
-      setErrorMsg('Informe sua senha.');
+    if (!loginData.identifier.trim() || !loginData.password) {
+      setErrorMsg('Informe seu e-mail ou CPF e sua senha.');
       return;
     }
 
     setLoading(true);
+    setErrorMsg('');
     try {
-      const loggedUser = await login({
-        email: loginIdentifier.trim(),
-        password: loginPassword,
+      const user = await login({
+        email: loginData.identifier.trim(),
+        password: loginData.password,
       });
 
-      if (loggedUser?.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/inicio', { replace: true });
-      }
+      // Redireciona para o painel de admin ou para a tela inicial
+      navigate(user?.role === 'admin' ? '/admin' : '/inicio', { replace: true });
     } catch (err) {
       setErrorMsg(err.message || 'E-mail, CPF ou senha incorretos.');
     } finally {
@@ -104,40 +82,35 @@ export default function AuthPage({ defaultTab = 'login' }) {
     }
   };
 
-  // --- Ação de Cadastro ---
-  const handleRegisterSubmit = async (e) => {
+  // Envio do formulário de Cadastro
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
+    if (!regData.name.trim() || !regData.email.trim() || !regData.password) {
+      setErrorMsg('Preencha os campos obrigatórios (Nome, E-mail e Senha).');
+      return;
+    }
 
-    if (!regName.trim()) {
-      setErrorMsg('Informe seu nome completo.');
-      return;
-    }
-    if (!regEmail.trim()) {
-      setErrorMsg('Informe seu e-mail.');
-      return;
-    }
-    if (!regPassword || regPassword.length < 6) {
+    if (regData.password.length < 6) {
       setErrorMsg('A senha deve ter no mínimo 6 caracteres.');
       return;
     }
 
     setLoading(true);
+    setErrorMsg('');
     try {
       await register({
-        username: regName.trim(),
-        email: regEmail.trim(),
-        password: regPassword,
-        cpf: regCpf.trim(),
-        phone: regPhone.trim(),
-        community: regCommunity,
+        username: regData.name.trim(),
+        email: regData.email.trim(),
+        password: regData.password,
+        cpf: regData.cpf.trim(),
+        phone: regData.phone.trim(),
+        community: regData.community,
       });
 
-      // Sucesso no cadastro: muda para a aba de login e preenche o identificador
-      setLoginIdentifier(regEmail.trim());
-      setSuccessMsg('Conta criada com sucesso! Faça seu login para continuar.');
-      handleTabChange('login');
+      // Ao cadastrar com sucesso, vai para o login com o e-mail já preenchido
+      setSuccessMsg('Conta criada com sucesso! Faça seu login.');
+      setLoginData((prev) => ({ ...prev, identifier: regData.email.trim() }));
+      switchTab('login');
     } catch (err) {
       setErrorMsg(err.message || 'Erro ao criar conta. Tente novamente.');
     } finally {
@@ -148,7 +121,7 @@ export default function AuthPage({ defaultTab = 'login' }) {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        {/* Coluna da Esquerda: Informações e Apresentação */}
+        {/* Lado Esquerdo: Banner informativo sobre o sistema rural */}
         <div className={styles.infoColumn}>
           <div className={styles.emblem}>
             <svg viewBox="0 0 24 24" fill="none" className={styles.sproutSvg}>
@@ -188,81 +161,61 @@ export default function AuthPage({ defaultTab = 'login' }) {
           </ul>
         </div>
 
-        {/* Coluna da Direita: Card com Abas de Login e Cadastro */}
+        {/* Lado Direito: Card com as Abas de Entrar / Criar conta */}
         <div className={styles.cardColumn}>
           <div className={styles.authCard}>
-            {/* Abas no Topo do Card */}
+            {/* Botões de alternar abas */}
             <div className={styles.cardTabs}>
               <button
                 type="button"
                 className={`${styles.tabBtn} ${activeTab === 'login' ? styles.tabBtnActive : ''}`}
-                onClick={() => handleTabChange('login')}
+                onClick={() => switchTab('login')}
               >
                 Entrar
               </button>
               <button
                 type="button"
                 className={`${styles.tabBtn} ${activeTab === 'register' ? styles.tabBtnActive : ''}`}
-                onClick={() => handleTabChange('register')}
+                onClick={() => switchTab('register')}
               >
                 Criar conta
               </button>
             </div>
 
-            {/* Conteúdo Interno do Card */}
             <div className={styles.cardBody}>
-              {/* Alertas */}
-              {successMsg && (
-                <div className={styles.successAlert}>{successMsg}</div>
-              )}
-              {errorMsg && (
-                <div className={styles.errorAlert}>{errorMsg}</div>
-              )}
+              {/* Mensagens de Sucesso ou Erro */}
+              {successMsg && <div className={styles.successAlert}>{successMsg}</div>}
+              {errorMsg && <div className={styles.errorAlert}>{errorMsg}</div>}
 
-
-
-
-              {/* ===== ABA: ENTRAR ===== */}
+              {/* ===== ABA DE LOGIN ===== */}
               {activeTab === 'login' && (
-                <form onSubmit={handleLoginSubmit} className={styles.form}>
+                <form onSubmit={handleLogin} className={styles.form}>
                   <div className={styles.headerTitleGroup}>
                     <h2 className={styles.formTitle}>Bem-vindo de volta</h2>
                     <p className={styles.formSubtitle}>Informe seus dados para entrar.</p>
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="login-id" className={styles.label}>
-                      E-mail ou CPF
-                    </label>
+                    <label htmlFor="login-id" className={styles.label}>E-mail ou CPF</label>
                     <input
                       id="login-id"
                       type="text"
                       className={styles.input}
                       placeholder="Digite seu e-mail ou CPF"
-                      value={loginIdentifier}
-                      onChange={(e) => {
-                        setLoginIdentifier(e.target.value);
-                        setErrorMsg('');
-                      }}
-                      autoComplete="username"
+                      value={loginData.identifier}
+                      onChange={(e) => setLoginData({ ...loginData, identifier: e.target.value })}
                     />
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="login-pass" className={styles.label}>
-                      Senha
-                    </label>
+                    <label htmlFor="login-pass" className={styles.label}>Senha</label>
                     <input
                       id="login-pass"
                       type="password"
                       className={styles.input}
                       placeholder="Digite sua senha"
-                      value={loginPassword}
-                      onChange={(e) => {
-                        setLoginPassword(e.target.value);
-                        setErrorMsg('');
-                      }}
-                      autoComplete="current-password"
+                      value={loginData.password}
+                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                     />
                   </div>
 
@@ -276,133 +229,107 @@ export default function AuthPage({ defaultTab = 'login' }) {
                     </button>
                   </div>
 
-                  <button
-                    type="submit"
-                    className={styles.submitButton}
-                    disabled={loading}
-                  >
+                  <button type="submit" className={styles.submitButton} disabled={loading}>
                     {loading ? 'Entrando...' : 'Entrar na minha conta'}
                   </button>
 
                   <div className={styles.switchRow}>
                     <span>Ainda não tem cadastro? </span>
-                    <button
-                      type="button"
-                      className={styles.switchLink}
-                      onClick={() => handleTabChange('register')}
-                    >
+                    <button type="button" className={styles.switchLink} onClick={() => switchTab('register')}>
                       Criar conta
                     </button>
                   </div>
                 </form>
               )}
 
-              {/* ===== ABA: CRIAR CONTA ===== */}
+              {/* ===== ABA DE CADASTRO ===== */}
               {activeTab === 'register' && (
-                <form onSubmit={handleRegisterSubmit} className={styles.form}>
+                <form onSubmit={handleRegister} className={styles.form}>
                   <div className={styles.headerTitleGroup}>
                     <h2 className={styles.formTitle}>Crie sua conta</h2>
                     <p className={styles.formSubtitle}>Preencha somente os dados necessários.</p>
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="reg-nome" className={styles.label}>
-                      Nome completo
-                    </label>
+                    <label htmlFor="reg-nome" className={styles.label}>Nome completo</label>
                     <input
                       id="reg-nome"
                       type="text"
                       className={styles.input}
                       placeholder="Digite seu nome"
-                      value={regName}
-                      onChange={(e) => setRegName(e.target.value)}
+                      value={regData.name}
+                      onChange={(e) => setRegData({ ...regData, name: e.target.value })}
                     />
                   </div>
 
                   <div className={styles.twoCols}>
                     <div className={styles.fieldGroup}>
-                      <label htmlFor="reg-cpf" className={styles.label}>
-                        CPF
-                      </label>
+                      <label htmlFor="reg-cpf" className={styles.label}>CPF</label>
                       <input
                         id="reg-cpf"
                         type="tel"
                         className={styles.input}
                         placeholder="000.000.000-00"
-                        value={regCpf}
+                        value={regData.cpf}
                         maxLength={14}
-                        onChange={(e) => setRegCpf(maskCpf(e.target.value))}
+                        onChange={(e) => setRegData({ ...regData, cpf: maskCpf(e.target.value) })}
                       />
                     </div>
 
                     <div className={styles.fieldGroup}>
-                      <label htmlFor="reg-tel" className={styles.label}>
-                        Telefone
-                      </label>
+                      <label htmlFor="reg-tel" className={styles.label}>Telefone</label>
                       <input
                         id="reg-tel"
                         type="tel"
                         className={styles.input}
                         placeholder="(81) 99999-9999"
-                        value={regPhone}
+                        value={regData.phone}
                         maxLength={15}
-                        onChange={(e) => setRegPhone(maskPhone(e.target.value))}
+                        onChange={(e) => setRegData({ ...regData, phone: maskPhone(e.target.value) })}
                       />
                     </div>
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="reg-email" className={styles.label}>
-                      E-mail
-                    </label>
+                    <label htmlFor="reg-email" className={styles.label}>E-mail</label>
                     <input
                       id="reg-email"
                       type="email"
                       className={styles.input}
                       placeholder="seuemail@exemplo.com"
-                      value={regEmail}
-                      onChange={(e) => setRegEmail(e.target.value)}
+                      value={regData.email}
+                      onChange={(e) => setRegData({ ...regData, email: e.target.value })}
                     />
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="reg-comunidade" className={styles.label}>
-                      Comunidade ou localidade
-                    </label>
+                    <label htmlFor="reg-comunidade" className={styles.label}>Comunidade ou localidade</label>
                     <select
                       id="reg-comunidade"
                       className={styles.select}
-                      value={regCommunity}
-                      onChange={(e) => setRegCommunity(e.target.value)}
+                      value={regData.community}
+                      onChange={(e) => setRegData({ ...regData, community: e.target.value })}
                     >
                       <option value="">Selecione sua comunidade</option>
                       {ruralCommunities.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
+                        <option key={c} value={c}>{c}</option>
                       ))}
                     </select>
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label htmlFor="reg-pass" className={styles.label}>
-                      Crie uma senha
-                    </label>
+                    <label htmlFor="reg-pass" className={styles.label}>Crie uma senha</label>
                     <input
                       id="reg-pass"
                       type="password"
                       className={styles.input}
                       placeholder="Use pelo menos 6 caracteres"
-                      value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value)}
+                      value={regData.password}
+                      onChange={(e) => setRegData({ ...regData, password: e.target.value })}
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    className={styles.submitButton}
-                    disabled={loading}
-                  >
+                  <button type="submit" className={styles.submitButton} disabled={loading}>
                     {loading ? 'Criando conta...' : 'Criar minha conta'}
                   </button>
 
@@ -412,11 +339,7 @@ export default function AuthPage({ defaultTab = 'login' }) {
 
                   <div className={styles.switchRow}>
                     <span>Já possui cadastro? </span>
-                    <button
-                      type="button"
-                      className={styles.switchLink}
-                      onClick={() => handleTabChange('login')}
-                    >
+                    <button type="button" className={styles.switchLink} onClick={() => switchTab('login')}>
                       Entrar
                     </button>
                   </div>

@@ -7,86 +7,83 @@ import { categories } from '../data/categories';
 import styles from './TrackingPage.module.css';
 
 /**
- * Tela de Acompanhamento — Mostra todos os pedidos vinculados à conta do usuário logado
- * e permite consultar pelo código de protocolo.
+ * Componente de Card Individual de Solicitação
+ */
+function DemandCard({ demand }) {
+  const category = categories.find((c) => c.id === demand.category)?.label || demand.category;
+  const dateFormatted = new Date(demand.createdAt).toLocaleDateString('pt-BR');
+
+  // Cores de status amigáveis
+  const statusClasses = {
+    concluida: styles.statusDone,
+    em_atendimento: styles.statusProgress,
+    aberta: styles.statusOpen,
+  };
+
+  const statusLabels = {
+    concluida: 'Concluída',
+    em_atendimento: 'Em atendimento',
+    aberta: 'Em análise',
+  };
+
+  return (
+    <div className={styles.demandCard}>
+      <div className={styles.cardHeader}>
+        <div className={styles.protocolBadge}>{demand.id}</div>
+        <span className={`${styles.statusBadge} ${statusClasses[demand.status] || styles.statusOpen}`}>
+          {statusLabels[demand.status] || 'Em análise'}
+        </span>
+      </div>
+
+      <h3 className={styles.cardCategory}>{category}</h3>
+      <p className={styles.cardDesc}>{demand.description}</p>
+
+      <div className={styles.cardMeta}>
+        <span>📍 {demand.location?.community || 'Zona Rural'}</span>
+        {demand.location?.reference && <span>• Ref: {demand.location.reference}</span>}
+        <span>• {dateFormatted}</span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Tela de Acompanhamento — Lista pedidos do usuário e permite busca por protocolo
  */
 export default function TrackingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [userDemands, setUserDemands] = useState([]);
+  const [demands, setDemands] = useState([]);
   const [searchCode, setSearchCode] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Carrega as demandas vinculadas à conta do usuário logado
+  // Carrega as solicitações do usuário logado
   useEffect(() => {
     async function fetchDemands() {
-      setLoading(true);
-      try {
-        if (user?.id) {
-          const list = await getDemandsByUser(user.id);
-          setUserDemands(list);
-        }
-      } catch (err) {
-        console.error('Erro ao buscar demandas:', err);
-      } finally {
-        setLoading(false);
+      if (user?.id) {
+        const list = await getDemandsByUser(user.id);
+        setDemands(list);
       }
+      setLoading(false);
     }
     fetchDemands();
   }, [user]);
 
-  // Função para pesquisar por código de protocolo avulso
-  const handleSearchProtocol = async (e) => {
+  // Busca rápida por código de protocolo
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchCode.trim()) {
-      setSearchResult(null);
       setHasSearched(false);
+      setSearchResult(null);
       return;
     }
 
-    setLoading(true);
     setHasSearched(true);
-    try {
-      const found = await getDemandById(searchCode.trim());
-      setSearchResult(found);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Helper para nome da categoria
-  const getCategoryTitle = (catId) => {
-    const found = categories.find((c) => c.id === catId);
-    return found ? found.label : catId;
-  };
-
-  // Helper para formatar data amigável
-  const formatDate = (isoString) => {
-    try {
-      const date = new Date(isoString);
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
-    } catch {
-      return 'Data recente';
-    }
-  };
-
-  // Helper para cor do status
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'concluida':
-        return <span className={`${styles.statusBadge} ${styles.statusDone}`}>Concluída</span>;
-      case 'em_atendimento':
-        return <span className={`${styles.statusBadge} ${styles.statusProgress}`}>Em atendimento</span>;
-      default:
-        return <span className={`${styles.statusBadge} ${styles.statusOpen}`}>Em análise</span>;
-    }
+    const found = await getDemandById(searchCode.trim());
+    setSearchResult(found);
   };
 
   return (
@@ -94,17 +91,16 @@ export default function TrackingPage() {
       <AppHeader />
 
       <main className={styles.mainContent}>
-        {/* Cabeçalho da página */}
         <div className={styles.headerGroup}>
           <span className={styles.tag}>CONSULTA & HISTÓRICO</span>
           <h1 className={styles.title}>Acompanhar solicitações</h1>
           <p className={styles.subtitle}>
-            Acompanhe o andamento dos pedidos vinculados à sua conta (<strong>{user?.username || 'Produtor'}</strong>) ou consulte pelo código de protocolo.
+            Acompanhe os pedidos da sua conta (<strong>{user?.username || 'Produtor'}</strong>) ou consulte por protocolo.
           </p>
         </div>
 
-        {/* Barra de pesquisa rápida por protocolo */}
-        <form onSubmit={handleSearchProtocol} className={styles.searchBar}>
+        {/* Busca por protocolo */}
+        <form onSubmit={handleSearch} className={styles.searchBar}>
           <input
             type="text"
             className={styles.searchInput}
@@ -112,16 +108,13 @@ export default function TrackingPage() {
             value={searchCode}
             onChange={(e) => setSearchCode(e.target.value)}
           />
-          <button type="submit" className={styles.searchButton}>
-            🔍 Buscar
-          </button>
+          <button type="submit" className={styles.searchButton}>🔍 Buscar</button>
           {hasSearched && (
             <button
               type="button"
               className={styles.clearButton}
               onClick={() => {
                 setSearchCode('');
-                setSearchResult(null);
                 setHasSearched(false);
               }}
             >
@@ -130,89 +123,41 @@ export default function TrackingPage() {
           )}
         </form>
 
-        {/* Exibição do resultado de busca pontual */}
-        {hasSearched && (
-          <div className={styles.sectionBlock}>
-            <h2 className={styles.sectionTitle}>Resultado da busca</h2>
-            {searchResult ? (
-              <div className={styles.demandCard}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.protocolBadge}>{searchResult.id}</div>
-                  {getStatusBadge(searchResult.status)}
-                </div>
+        {/* Resultado de Busca ou Lista de Pedidos */}
+        <div className={styles.sectionBlock}>
+          <h2 className={styles.sectionTitle}>
+            {hasSearched ? 'Resultado da busca' : 'Suas solicitações registradas'}
+          </h2>
 
-                <h3 className={styles.cardCategory}>
-                  {getCategoryTitle(searchResult.category)}
-                </h3>
-
-                <p className={styles.cardDesc}>{searchResult.description}</p>
-
-                <div className={styles.cardMeta}>
-                  <span>📍 {searchResult.location?.community || searchResult.location?.neighborhood || 'Zona Rural'}</span>
-                  {searchResult.location?.reference && (
-                    <span>• Ref: {searchResult.location.reference}</span>
-                  )}
-                  <span>• {formatDate(searchResult.createdAt)}</span>
-                </div>
-              </div>
+          {loading ? (
+            <p className={styles.loadingText}>Carregando...</p>
+          ) : hasSearched ? (
+            searchResult ? (
+              <DemandCard demand={searchResult} />
             ) : (
-              <p className={styles.emptyText}>
-                Nenhuma solicitação encontrada com o protocolo <strong>"{searchCode}"</strong>.
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Lista das solicitações vinculadas à conta do usuário */}
-        {!hasSearched && (
-          <div className={styles.sectionBlock}>
-            <h2 className={styles.sectionTitle}>Suas solicitações registradas</h2>
-
-            {loading ? (
-              <p className={styles.loadingText}>Carregando suas solicitações...</p>
-            ) : userDemands.length > 0 ? (
-              <div className={styles.demandsList}>
-                {userDemands.map((demand) => (
-                  <div key={demand.id} className={styles.demandCard}>
-                    <div className={styles.cardHeader}>
-                      <div className={styles.protocolBadge}>{demand.id}</div>
-                      {getStatusBadge(demand.status)}
-                    </div>
-
-                    <h3 className={styles.cardCategory}>
-                      {getCategoryTitle(demand.category)}
-                    </h3>
-
-                    <p className={styles.cardDesc}>{demand.description}</p>
-
-                    <div className={styles.cardMeta}>
-                      <span>📍 {demand.location?.community || demand.location?.neighborhood || 'Zona Rural'}</span>
-                      {demand.location?.reference && (
-                        <span>• Ref: {demand.location.reference}</span>
-                      )}
-                      <span>• Enviado em {formatDate(demand.createdAt)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyContainer}>
-                <div className={styles.emptyIcon}>📋</div>
-                <h3 className={styles.emptyTitle}>Nenhuma solicitação encontrada</h3>
-                <p className={styles.emptySubtitle}>
-                  Você ainda não enviou pedidos com esta conta. Clique abaixo para fazer sua primeira solicitação.
-                </p>
-                <button
-                  type="button"
-                  className={styles.newDemandBtn}
-                  onClick={() => navigate('/solicitacao')}
-                >
-                  + Fazer uma solicitação
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+              <p className={styles.emptyText}>Nenhuma solicitação encontrada com esse código.</p>
+            )
+          ) : demands.length > 0 ? (
+            <div className={styles.demandsList}>
+              {demands.map((d) => (
+                <DemandCard key={d.id} demand={d} />
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptyContainer}>
+              <div className={styles.emptyIcon}>📋</div>
+              <h3 className={styles.emptyTitle}>Nenhuma solicitação encontrada</h3>
+              <p className={styles.emptySubtitle}>Você ainda não enviou pedidos com esta conta.</p>
+              <button
+                type="button"
+                className={styles.newDemandBtn}
+                onClick={() => navigate('/solicitacao')}
+              >
+                + Fazer uma solicitação
+              </button>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
