@@ -1,0 +1,247 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-warm);
+}
+
+.mainContent {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 32px 20px 64px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.backLink {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-green-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity var(--transition-fast);
+}
+
+.backLink:hover {
+  opacity: 0.8;
+}
+
+.headerGroup {
+  margin-bottom: 24px;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-green-tag);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--color-green-primary);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14.5px;
+  color: #556259;
+}
+
+/* --- Stepper --- */
+.stepperContainer {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stepItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stepLabel {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-green-primary);
+}
+
+.stepLineActive {
+  height: 3px;
+  background-color: var(--color-green-primary);
+  border-radius: 2px;
+}
+
+/* --- Card do Formulário --- */
+.formCard {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-warm);
+  border-radius: 12px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+}
+
+.formCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formColSmall {
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-green-primary);
+}
+
+.optional {
+  font-weight: 400;
+  color: #8c978f;
+  font-size: 12px;
+}
+
+.textInput,
+.selectInput {
+  width: 100%;
+  border: 1px solid #dcd7cb;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  color: var(--color-text-main);
+  background-color: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.textInput:focus,
+.selectInput:focus {
+  border-color: var(--color-green-primary);
+  box-shadow: 0 0 0 2px rgba(21, 62, 37, 0.1);
+}
+
+.helperText {
+  font-size: 11.5px;
+  color: #7b887f;
+}
+
+/* --- Alerta de Resumo Verde --- */
+.serviceSummaryBar {
+  background-color: #ebf4ee;
+  border-radius: 6px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1a492b;
+}
+
+.summaryCheck {
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--color-green-primary);
+}
+
+.summaryText {
+  font-size: 13px;
+}
+
+.errorText {
+  font-size: 13px;
+  color: var(--color-danger);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* --- Ações do Rodapé --- */
+.footerActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+}
+
+.backButton {
+  background-color: #ffffff;
+  color: #4a564e;
+  border: 1px solid #dcd7cb;
+  border-radius: 6px;
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.backButton:hover {
+  background-color: #f8faf8;
+  border-color: #adb5ae;
+}
+
+.submitButton {
+  background-color: var(--color-green-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 11px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--color-green-hover);
+}
+
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .formRow {
+    flex-direction: column;
+  }
+  .formColSmall {
+    width: 100%;
+  }
+}

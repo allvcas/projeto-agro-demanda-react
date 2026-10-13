@@ -3,24 +3,30 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 20px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px 24px;
   background-color: var(--color-white);
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid var(--color-border-warm);
+  box-sizing: border-box;
 }
 
-.leftGroup {
+.logoLink {
   display: flex;
   align-items: center;
   gap: 12px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .emblem {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  overflow: hidden;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .emblemSvg {
@@ -35,36 +41,86 @@
 }
 
 .title {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--color-primary);
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--color-green-primary);
   line-height: 1.2;
-  letter-spacing: 0.5px;
-  margin: 0;
 }
 
 .slogan {
   font-size: 11px;
-  color: var(--color-text-muted);
-  line-height: 1.2;
-  margin: 2px 0 0 0;
+  color: #7A857D;
+  margin-top: 1px;
 }
 
-.menuButton {
-  padding: 8px 10px;
-  color: var(--color-primary);
+/* Navegação desktop */
+.navLinks {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: background-color var(--transition-fast);
+  gap: 16px;
 }
 
-.menuButton:hover {
-  background-color: var(--color-primary-light);
+.navItem {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4A564E;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+}
+
+.navItem:hover {
+  color: var(--color-green-primary);
+  background-color: #F4F8F5;
+}
+
+.navItemActive {
+  background-color: #EBF4EE;
+  color: var(--color-green-primary);
+  font-weight: 600;
+}
+
+.logoutButton {
+  font-size: 13px;
+  color: #8C968F;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #E4E0D7;
+  cursor: pointer;
+  background: transparent;
+  transition: all var(--transition-fast);
+  margin-left: 8px;
+}
+
+.logoutButton:hover {
+  background-color: #FFF2F2;
+  color: #D93025;
+  border-color: #FFC9C9;
+}
+
+/* Mobile menu toggle */
+.menuButton {
+  display: none;
+  padding: 8px 10px;
+  color: var(--color-green-primary);
+  cursor: pointer;
 }
 
 .menuIcon {
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1;
 }
+
+@media (max-width: 768px) {
+  .navLinks {
+    display: none;
+  }
+  .menuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+

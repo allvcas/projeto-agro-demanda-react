@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
 @import './tokens.css';
 
 *, *::before, *::after {
@@ -8,7 +8,7 @@
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
   width: 100%;
 }
 
@@ -16,9 +16,10 @@ body {
   font-family: var(--font-family);
   font-size: var(--font-size-md);
   color: var(--color-text-main);
-  background: var(--color-white);
+  background-color: var(--color-bg-warm);
   -webkit-font-smoothing: antialiased;
 }
+
 
 a {
   text-decoration: none;

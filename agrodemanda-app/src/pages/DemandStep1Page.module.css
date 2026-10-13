@@ -1,0 +1,244 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-warm);
+}
+
+.mainContent {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 32px 20px 64px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.backLink {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-green-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity var(--transition-fast);
+}
+
+.backLink:hover {
+  opacity: 0.8;
+}
+
+.headerGroup {
+  margin-bottom: 24px;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-green-tag);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--color-green-primary);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14.5px;
+  color: #556259;
+}
+
+/* --- Stepper de Progresso --- */
+.stepperContainer {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stepItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stepLabel {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-green-primary);
+}
+
+.stepLabelMuted {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #8c978f;
+}
+
+.stepLineActive {
+  height: 3px;
+  background-color: var(--color-green-primary);
+  border-radius: 2px;
+}
+
+.stepLineInactive {
+  height: 3px;
+  background-color: #d8d3c7;
+  border-radius: 2px;
+}
+
+/* --- Card do Formulário --- */
+.formCard {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-warm);
+  border-radius: 12px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.sectionLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-green-primary);
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* --- Grid de 6 Serviços --- */
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.serviceTile {
+  background-color: #ffffff;
+  border: 1px solid #dcd7cb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.serviceTile:hover {
+  border-color: var(--color-green-primary);
+  background-color: #f8faf8;
+}
+
+.serviceTileSelected {
+  border: 1.5px solid var(--color-green-primary);
+  background-color: #f1f7f3;
+}
+
+.tileLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.serviceIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-green-primary);
+  flex-shrink: 0;
+}
+
+.serviceName {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.checkIcon {
+  color: var(--color-green-primary);
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* --- Textarea de Descrição --- */
+.descContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid #dcd7cb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  color: var(--color-text-main);
+  background-color: #ffffff;
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.textarea:focus {
+  border-color: var(--color-green-primary);
+  box-shadow: 0 0 0 2px rgba(21, 62, 37, 0.1);
+}
+
+.helperText {
+  font-size: 11.5px;
+  color: #7b887f;
+}
+
+.errorText {
+  font-size: 13px;
+  color: var(--color-danger);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* --- Ações do Rodapé --- */
+.footerActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+}
+
+.continueButton {
+  background-color: var(--color-green-primary);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.continueButton:hover {
+  background-color: var(--color-green-hover);
+}
+
+@media (max-width: 600px) {
+  .servicesGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,160 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-warm);
+}
+
+.mainContent {
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 48px 20px 64px 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successCard {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-warm);
+  border-radius: 12px;
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.iconCircle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #ebf4ee;
+  color: var(--color-green-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.checkSvg {
+  width: 24px;
+  height: 24px;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-green-tag);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-green-primary);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 14.5px;
+  color: #556259;
+  max-width: 420px;
+  margin-bottom: 24px;
+  line-height: 1.45;
+}
+
+/* --- Caixa de Protocolo Tracejada --- */
+.protocolBox {
+  width: 100%;
+  max-width: 440px;
+  background-color: #f7f3e9;
+  border: 1.5px dashed #c8b99c;
+  border-radius: 8px;
+  padding: 20px 24px;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+
+.protocolLabel {
+  display: block;
+  font-size: 12px;
+  color: #636b63;
+  margin-bottom: 8px;
+}
+
+.protocolCode {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-green-primary);
+}
+
+.helperText {
+  font-size: 12px;
+  color: #7b887f;
+  margin-bottom: 28px;
+}
+
+/* --- Botões de Ação --- */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  background-color: var(--color-green-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.primaryButton:hover {
+  background-color: var(--color-green-hover);
+}
+
+.secondaryButton {
+  background-color: #ffffff;
+  color: var(--color-green-primary);
+  border: 1px solid var(--color-border-warm);
+  border-radius: 6px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.secondaryButton:hover {
+  background-color: #f7faf8;
+  border-color: var(--color-green-primary);
+}
+
+@media (max-width: 500px) {
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}

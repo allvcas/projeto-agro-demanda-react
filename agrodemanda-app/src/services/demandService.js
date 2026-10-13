@@ -101,15 +101,21 @@ function saveDemands(demands) {
   }
 }
 
-/** Submit a new demand */
-export async function submitDemand({ userId, category, description, location }) {
-  await delay(700);
-  const randomNum = Math.floor(1000 + Math.random() * 9000);
-  const id = `DEM-${randomNum}`;
+/** Cadastrar uma nova demanda ligada ao usuário logado */
+export async function submitDemand({ userId, userName, userPhone, userEmail, category, description, location }) {
+  await delay(600);
+  
+  // Gera protocolo no formato da foto: AGR-2026-0184
+  const randomNum = String(Math.floor(100 + Math.random() * 900)).padStart(4, '0');
+  const id = `AGR-2026-${randomNum}`;
+
   const demand = {
     id,
     createdAt: new Date().toISOString(),
     userId: userId || 'anon',
+    userName: userName || '',
+    userPhone: userPhone || '',
+    userEmail: userEmail || '',
     category,
     status: 'aberta', // 'aberta' | 'em_atendimento' | 'concluida'
     description,
@@ -119,16 +125,32 @@ export async function submitDemand({ userId, category, description, location }) 
   const demands = loadDemands();
   demands.unshift(demand);
   saveDemands(demands);
-  return { id };
+  return { id, demand };
 }
 
-/** Get all demands for admin view */
+/** Obter todas as demandas do usuário logado */
+export async function getDemandsByUser(userId) {
+  await delay(300);
+  const demands = loadDemands();
+  if (!userId) return [];
+  return demands.filter((d) => d.userId === userId);
+}
+
+/** Obter demanda por protocolo específico */
+export async function getDemandById(id) {
+  await delay(300);
+  const demands = loadDemands();
+  if (!id) return null;
+  return demands.find((d) => d.id.toLowerCase() === id.trim().toLowerCase()) || null;
+}
+
+/** Obter todas as demandas para o painel administrativo */
 export async function getDemands() {
   await delay(300);
   return loadDemands();
 }
 
-/** Update demand status */
+/** Atualizar status da demanda */
 export async function updateDemandStatus(id, newStatus) {
   await delay(200);
   const demands = loadDemands();
@@ -137,7 +159,7 @@ export async function updateDemandStatus(id, newStatus) {
   return updated;
 }
 
-/** Delete/remove a demand */
+/** Excluir uma demanda */
 export async function deleteDemand(id) {
   await delay(200);
   const demands = loadDemands();
@@ -145,3 +167,4 @@ export async function deleteDemand(id) {
   saveDemands(updated);
   return updated;
 }
+

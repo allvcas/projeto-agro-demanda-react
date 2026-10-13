@@ -25,8 +25,8 @@ function delay(ms) {
 }
 
 /** Register a new user. Returns { user } or throws { code, message }. */
-export async function register({ username, email, password }) {
-  await delay(700);
+export async function register({ username, email, password, cpf, phone, community }) {
+  await delay(600);
   const users = loadUsers();
   const exists = users.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
   if (exists) {
@@ -39,6 +39,9 @@ export async function register({ username, email, password }) {
     id: crypto.randomUUID(),
     username: username.trim(),
     email: email.trim().toLowerCase(),
+    cpf: cpf ? cpf.trim() : '',
+    phone: phone ? phone.trim() : '',
+    community: community ? community.trim() : '',
     passwordHash: hashPass(password),
   };
   users.push(user);
@@ -48,10 +51,11 @@ export async function register({ username, email, password }) {
 
 /** Login. Returns { user } or throws { code, message }. */
 export async function login({ email, password }) {
-  await delay(700);
+  await delay(600);
   const identifier = (email || '').trim().toLowerCase();
+  const cleanIdDigits = identifier.replace(/\D/g, '');
 
-  // Admin credentials per requirement: usuário = admin, senha = admin
+  // Admin credentials: usuário = admin, senha = admin
   if (identifier === 'admin' && password === 'admin') {
     return {
       user: {
@@ -64,14 +68,20 @@ export async function login({ email, password }) {
   }
 
   const users = loadUsers();
-  const user = users.find(
-    (u) =>
-      u.email.toLowerCase() === identifier ||
-      (u.username && u.username.toLowerCase() === identifier)
-  );
+  const user = users.find((u) => {
+    const userEmail = (u.email || '').toLowerCase();
+    const userName = (u.username || '').toLowerCase();
+    const userCpfDigits = (u.cpf || '').replace(/\D/g, '');
+
+    return (
+      userEmail === identifier ||
+      userName === identifier ||
+      (cleanIdDigits.length >= 9 && userCpfDigits && userCpfDigits === cleanIdDigits)
+    );
+  });
 
   if (!user || user.passwordHash !== hashPass(password)) {
-    const err = new Error('E-mail ou senha incorretos.');
+    const err = new Error('E-mail, CPF ou senha incorretos.');
     err.code = 'INVALID_CREDENTIALS';
     throw err;
   }
@@ -80,6 +90,9 @@ export async function login({ email, password }) {
       id: user.id,
       username: user.username,
       email: user.email,
+      cpf: user.cpf,
+      phone: user.phone,
+      community: user.community,
       role: 'user',
     },
   };

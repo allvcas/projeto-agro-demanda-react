@@ -1,22 +1,32 @@
 /* ===== DESIGN TOKENS — AgroDemanda ===== */
 :root {
-  /* --- Colors --- */
-  --color-primary:       #0B47A8;
-  --color-primary-dark:  #083a8a;
-  --color-primary-light: #DCE6F7;
+  /* --- Tema Agro Clean --- */
+  --color-green-primary: #153E25;
+  --color-green-hover:   #0F2D1B;
+  --color-green-light:   #EBF4EE;
+  --color-green-tag:     #1D5032;
+  --color-bg-warm:       #FAF8F5;
+  --color-border-warm:   #E4E0D7;
+  --color-gold-box:      #F7F3E9;
+  --color-gold-border:   #C8B99C;
+
+  /* --- Colors tradicionais / compatibilidade --- */
+  --color-primary:       #153E25;
+  --color-primary-dark:  #0F2D1B;
+  --color-primary-light: #EBF4EE;
   --color-danger:        #D93025;
-  --color-field-bg:      #D9D9D9;
-  --color-field-border:  #D9D9D9;
+  --color-field-bg:      #FFFFFF;
+  --color-field-border:  #D2CEBE;
   --color-white:         #FFFFFF;
-  --color-text-main:     #1A1A1A;
-  --color-text-muted:    #6B6B6B;
-  --color-text-label:    #0B47A8;
-  --color-border-blue:   #0B47A8;
+  --color-text-main:     #1D2B20;
+  --color-text-muted:    #5E6860;
+  --color-text-label:    #153E25;
+  --color-border-blue:   #153E25;
   --color-card-bg:       #FFFFFF;
   --color-overlay:       rgba(0,0,0,0.15);
 
   /* --- Border Radii --- */
-  --radius-card:   16px;
+  --radius-card:   12px;
   --radius-field:   8px;
   --radius-btn:     8px;
   --radius-pill:   50px;
@@ -31,6 +41,7 @@
 
   /* --- Typography --- */
   --font-family: 'Open Sans', 'Noto Sans', system-ui, sans-serif;
+  --font-serif:  'Lora', 'Playfair Display', Georgia, serif;
   --font-size-xs:   11px;
   --font-size-sm:   13px;
   --font-size-md:   15px;
@@ -42,3 +53,4 @@
   /* --- Transition --- */
   --transition-fast: 150ms ease;
 }
+

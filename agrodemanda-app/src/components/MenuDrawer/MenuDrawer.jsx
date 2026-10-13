@@ -22,11 +22,7 @@ export default function MenuDrawer({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const handleNewDemand = () => {
-    resetDraft();
-    navigate('/demanda');
-    onClose();
-  };
+
 
   const handleLogout = () => {
     logout();
@@ -62,10 +58,37 @@ export default function MenuDrawer({ isOpen, onClose }) {
           <button
             type="button"
             className={styles.menuItem}
-            onClick={handleNewDemand}
+            onClick={() => {
+              navigate('/inicio');
+              onClose();
+            }}
           >
-            <span>📝</span> Nova Demanda
+            <span>🏠</span> Início
           </button>
+
+          <button
+            type="button"
+            className={styles.menuItem}
+            onClick={() => {
+              resetDraft();
+              navigate('/solicitacao');
+              onClose();
+            }}
+          >
+            <span>📝</span> Nova Solicitação
+          </button>
+
+          <button
+            type="button"
+            className={styles.menuItem}
+            onClick={() => {
+              navigate('/acompanhar');
+              onClose();
+            }}
+          >
+            <span>🔍</span> Acompanhar Pedidos
+          </button>
+
           {/* Admin panel option only visible to administrator (username: admin) */}
           {(user?.role === 'admin' || user?.username === 'admin') && (
             <button
@@ -79,6 +102,7 @@ export default function MenuDrawer({ isOpen, onClose }) {
               <span>📊</span> Painel do Administrador
             </button>
           )}
+
           <button
             type="button"
             className={`${styles.menuItem} ${styles.logoutItem}`}
